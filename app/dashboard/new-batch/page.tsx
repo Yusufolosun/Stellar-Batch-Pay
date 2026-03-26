@@ -3,10 +3,9 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { FileUpload } from "@/components/file-upload";
 import {
-  Upload,
   Send,
-  Download,
   Info,
   Lightbulb,
   Check,
@@ -20,11 +19,11 @@ export default function NewBatchPaymentPage() {
     "testnet",
   );
   const [file, setFile] = useState<File | null>(null);
+  const [fileFormat, setFileFormat] = useState<"json" | "csv" | null>(null);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setFile(e.target.files[0]);
-    }
+  const handleFileSelect = (selectedFile: File, format: "json" | "csv") => {
+    setFile(selectedFile);
+    setFileFormat(format);
   };
 
   return (
@@ -59,47 +58,18 @@ export default function NewBatchPaymentPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="border-2 border-dashed border-slate-700 rounded-lg p-12 text-center">
-                <div className="flex flex-col items-center gap-4">
-                  <div className="w-16 h-16 rounded-full bg-slate-800 flex items-center justify-center">
-                    <Upload className="w-8 h-8 text-slate-400" />
-                  </div>
-                  <div>
-                    <p className="text-white font-medium mb-1">
-                      Drag and drop your file here
-                    </p>
-                    <p className="text-slate-400 text-sm mb-4">
-                      or click to browse
-                    </p>
-                  </div>
-                  <label htmlFor="file-upload">
-                    <Button
-                      type="button"
-                      className="bg-emerald-500 hover:bg-emerald-600 text-white"
-                      onClick={() =>
-                        document.getElementById("file-upload")?.click()
-                      }
-                    >
-                      <Upload className="w-4 h-4 mr-2" />
-                      Choose File
-                    </Button>
-                  </label>
-                  <input
-                    id="file-upload"
-                    type="file"
-                    className="hidden"
-                    accept=".csv,.json"
-                    onChange={handleFileChange}
-                  />
-                  <div className="text-xs text-slate-500 mt-2">
-                    <p>Supported formats: CSV, JSON (Max 10MB)</p>
-                    <button className="text-emerald-500 hover:text-emerald-400 flex items-center gap-1 mt-1 mx-auto">
-                      <Download className="w-3 h-3" />
-                      Download sample file
-                    </button>
-                  </div>
+              <FileUpload onFileSelect={handleFileSelect} />
+              {file && (
+                <div className="mt-4 text-sm text-slate-400">
+                  Selected:{" "}
+                  <span className="text-white font-medium">{file.name}</span>
+                  {fileFormat && (
+                    <span className="ml-2 text-emerald-500">
+                      ({fileFormat.toUpperCase()})
+                    </span>
+                  )}
                 </div>
-              </div>
+              )}
             </CardContent>
           </Card>
 
