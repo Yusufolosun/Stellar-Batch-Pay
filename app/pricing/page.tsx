@@ -4,6 +4,7 @@ import StellarFooter from "@/components/landing/StellarFooter";
 import { PayPerTransaction } from "@/components/pricing/pay-per-transaction";
 import { PricingPlans } from "@/components/pricing/pricing-plans";
 import { CostExampleSection } from "@/components/pricing/CostExampleSection";
+import { FaqSection } from "@/components/pricing/faq-section";
 
 export const metadata: Metadata = {
   title: "Pricing | Stellar Batch Pay",
@@ -42,6 +43,8 @@ export default function PricingPage() {
 
       {/* Cost Example Section */}
       <CostExampleSection />
+      {/* FAQ Section */}
+      <FaqSection />
 
       <StellarFooter />
     </main>
