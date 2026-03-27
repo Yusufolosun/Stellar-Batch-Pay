@@ -5,6 +5,6 @@
 
 export { parseInput, parseJSON, parseCSV, parseFileStream, analyzeParsedPayments, parsePaymentFile } from './parser';
 export { createBatches, parseAsset, getBatchSummary } from './batcher';
-export { validatePaymentInstruction, validateBatchConfig, validatePaymentInstructions } from './validator';
+export { validatePaymentInstruction, validateBatchConfig, validatePaymentInstructions, buildBalancesMap, resolveAssetKey, validateBalances } from './validator';
 export { formatAmount } from './utils';
-export type { PaymentInstruction, Asset, StellarTransaction, PaymentResult, BatchResult, BatchConfig, PaymentValidationRow, ParsedPaymentFile } from './types';
+export type { PaymentInstruction, Asset, StellarTransaction, PaymentResult, BatchResult, BatchConfig, PaymentValidationRow, ParsedPaymentFile, HorizonBalance, BalancesMap, BalanceValidationResult, AssetBalanceCheck } from './types';
