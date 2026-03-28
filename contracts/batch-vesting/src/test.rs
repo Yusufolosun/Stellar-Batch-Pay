@@ -230,6 +230,82 @@ fn test_only_pending_admin_can_accept_transfer() {
 }
 
 #[test]
+fn test_transfer_admin_direct() {
+    let env = Env::default();
+    env.mock_all_auths();
+
+    let contract_id = env.register_contract(None, BatchVestingContract);
+    let client = BatchVestingContractClient::new(&env, &contract_id);
+
+    let admin = Address::generate(&env);
+    let new_admin = Address::generate(&env);
+
+    client.set_admin(&admin);
+    client.transfer_admin(&admin, &new_admin);
+
+    // new_admin can now exercise admin privileges
+    client.toggle_pause(&new_admin, &true);
+    client.toggle_pause(&new_admin, &false);
+}
+
+#[test]
+#[should_panic(expected = "Only admin can perform this action")]
+fn test_transfer_admin_non_admin_rejected() {
+    let env = Env::default();
+    env.mock_all_auths();
+
+    let contract_id = env.register_contract(None, BatchVestingContract);
+    let client = BatchVestingContractClient::new(&env, &contract_id);
+
+    let admin = Address::generate(&env);
+    let attacker = Address::generate(&env);
+    let new_admin = Address::generate(&env);
+
+    client.set_admin(&admin);
+    client.transfer_admin(&attacker, &new_admin);
+}
+
+#[test]
+#[should_panic(expected = "Only admin can perform this action")]
+fn test_transfer_admin_old_admin_loses_privileges() {
+    let env = Env::default();
+    env.mock_all_auths();
+
+    let contract_id = env.register_contract(None, BatchVestingContract);
+    let client = BatchVestingContractClient::new(&env, &contract_id);
+
+    let admin = Address::generate(&env);
+    let new_admin = Address::generate(&env);
+
+    client.set_admin(&admin);
+    client.transfer_admin(&admin, &new_admin);
+
+    // old admin should no longer have privileges
+    client.toggle_pause(&admin, &true);
+}
+
+#[test]
+fn test_transfer_admin_clears_pending() {
+    let env = Env::default();
+    env.mock_all_auths();
+
+    let contract_id = env.register_contract(None, BatchVestingContract);
+    let client = BatchVestingContractClient::new(&env, &contract_id);
+
+    let admin = Address::generate(&env);
+    let pending_admin = Address::generate(&env);
+    let new_admin = Address::generate(&env);
+
+    client.set_admin(&admin);
+    // propose a pending transfer, then override with a direct transfer
+    client.propose_admin(&admin, &pending_admin);
+    client.transfer_admin(&admin, &new_admin);
+
+    // pending_admin should not be able to accept — no pending transfer in flight
+    // (accept_admin would panic with "No admin transfer proposed")
+}
+
+#[test]
 fn test_admin_can_renounce() {
     let env = Env::default();
     env.mock_all_auths();

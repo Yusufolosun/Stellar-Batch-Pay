@@ -223,11 +223,21 @@ impl BatchVestingContract {
         Self::set_admin_internal(&env, &new_admin);
         Self::remove_pending_admin_internal(&env);
 
-        env.events()
-            .publish((Symbol::new(&env, "PauseToggled"),), (admin, paused));
         env.events().publish(
             (Symbol::new(&env, "AdminTransferred"),),
             (previous_admin, new_admin),
+        );
+    }
+
+    /// Directly transfer admin to a new address. Requires authorization from the current admin.
+    pub fn transfer_admin(env: Env, admin: Address, new_admin: Address) {
+        Self::require_current_admin(&env, &admin);
+        Self::set_admin_internal(&env, &new_admin);
+        Self::remove_pending_admin_internal(&env);
+
+        env.events().publish(
+            (Symbol::new(&env, "AdminTransferred"),),
+            (admin, new_admin),
         );
     }
 
