@@ -178,8 +178,12 @@ impl BatchVestingContract {
             );
 
             env.events().publish(
-                (Symbol::new(&env, "VestingDeposited"),),
-                (sender.clone(), recipient, amount, unlock_time),
+                (
+                    Symbol::new(&env, "VestingDeposited"),
+                    sender.clone(),
+                    recipient.clone(),
+                ),
+                (amount, unlock_time),
             );
         }
 
@@ -219,6 +223,8 @@ impl BatchVestingContract {
         Self::set_admin_internal(&env, &new_admin);
         Self::remove_pending_admin_internal(&env);
 
+        env.events()
+            .publish((Symbol::new(&env, "PauseToggled"),), (admin, paused));
         env.events().publish(
             (Symbol::new(&env, "AdminTransferred"),),
             (previous_admin, new_admin),
@@ -286,8 +292,12 @@ impl BatchVestingContract {
         token_client.transfer(&env.current_contract_address(), &sender, &revoked_amount);
 
         env.events().publish(
-            (Symbol::new(&env, "VestingRevoked"),),
-            (recipient, sender, revoked_amount, unlock_time),
+            (
+                Symbol::new(&env, "VestingRevoked"),
+                recipient.clone(),
+                sender.clone(),
+            ),
+            (revoked_amount, unlock_time),
         );
     }
 
@@ -343,8 +353,12 @@ impl BatchVestingContract {
             token_client.transfer(&env.current_contract_address(), &sender, &revoked_amount);
 
             env.events().publish(
-                (Symbol::new(&env, "VestingRevoked"),),
-                (recipient, sender, revoked_amount, unlock_time),
+                (
+                    Symbol::new(&env, "VestingRevoked"),
+                    recipient.clone(),
+                    sender.clone(),
+                ),
+                (revoked_amount, unlock_time),
             );
         }
     }
@@ -403,8 +417,8 @@ impl BatchVestingContract {
         );
 
         env.events().publish(
-            (Symbol::new(&env, "VestingClaimed"),),
-            (recipient, amount_to_transfer),
+            (Symbol::new(&env, "VestingClaimed"), recipient.clone()),
+            amount_to_transfer,
         );
     }
 }
